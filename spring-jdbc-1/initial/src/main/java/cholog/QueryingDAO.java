@@ -1,7 +1,6 @@
 package cholog;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,7 +30,8 @@ public class QueryingDAO {
      */
     public int count() {
         //TODO : customers 디비에 포함되어있는 row가 몇개인지 확인하는 기능 구현
-        return 0;
+        Integer rowCount = jdbcTemplate.queryForObject("SELECT count(*) FROM customers", Integer.class);
+        return rowCount;
     }
 
     /**
@@ -39,7 +39,8 @@ public class QueryingDAO {
      */
     public String getLastName(Long id) {
         //TODO : 주어진 Id에 해당하는 customers의 lastName을 반환
-        return null;
+        String lastName = jdbcTemplate.queryForObject("SELECT last_name FROM customers WHERE id = ?", String.class, id);
+        return lastName;
     }
 
     /**
@@ -48,7 +49,16 @@ public class QueryingDAO {
     public Customer findCustomerById(Long id) {
         String sql = "select id, first_name, last_name from customers where id = ?";
         //TODO : 주어진 Id에 해당하는 customer를 객체로 반환
-        return null;
+        Customer customer = jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNum) -> {
+                    Customer target = new Customer(
+                            resultSet.getLong("id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name")
+                    );
+                    return target;
+                }, id);
+        return customer;
     }
 
     /**
@@ -57,7 +67,16 @@ public class QueryingDAO {
     public List<Customer> findAllCustomers() {
         String sql = "select id, first_name, last_name from customers";
         //TODO : 저장된 모든 Customers를 list형태로 반환
-        return null;
+        List<Customer> customers = jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> {
+                    Customer customer = new Customer(
+                            resultSet.getLong("id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name")
+                    );
+                    return customer;
+                });
+        return customers;
     }
 
     /**
@@ -66,6 +85,15 @@ public class QueryingDAO {
     public List<Customer> findCustomerByFirstName(String firstName) {
         String sql = "select id, first_name, last_name from customers where first_name = ?";
         //TODO : firstName을 기준으로 customer를 list형태로 반환
-        return null;
+        List<Customer> customers = jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> {
+                    Customer customer = new Customer(
+                            resultSet.getLong("id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name")
+                    );
+                    return customer;
+                }, firstName);
+        return customers;
     }
 }
