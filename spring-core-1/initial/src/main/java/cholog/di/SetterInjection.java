@@ -7,11 +7,15 @@ import org.springframework.stereotype.Service;
 public class SetterInjection {
     private InjectionBean injectionBean;
 
+    public String sayHello() {
+        return injectionBean.hello();
+    }
+
     /*
     Setter Injection으로 InjectionBean 주입받기
      */
-
-    public String sayHello() {
-        return injectionBean.hello();
+    @Autowired
+    public void setInjectionBean(InjectionBean injectionBean){
+        this.injectionBean = injectionBean;
     }
 }
